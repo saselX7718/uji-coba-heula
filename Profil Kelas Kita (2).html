@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Profil Kelas Kita</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap">
+<style>
+:root{--paper:#fdfdfa;--line:#cfe0f5;--margin:#e5484d;--ink:#1f2a6b;--muted:#566089;--cover:#2446d6;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#11152b;--line:#232b55;--margin:#ff6b70;--ink:#e3e8ff;--muted:#9aa4d6;--cover:#1a2a8a;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#11152b;--line:#232b55;--margin:#ff6b70;--ink:#e3e8ff;--muted:#9aa4d6;--cover:#1a2a8a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/2rem system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.hand{font-family:Caveat,"Segoe Print","Comic Sans MS",cursive}
+.cover{background:var(--cover);color:#fff;padding:2rem 1.25rem 2.5rem}
+.cover>div{max-width:640px;margin:0 auto}
+.cover h1{margin:0 0 1.25rem;font-weight:700;font-size:clamp(3.2rem,17vw,5.5rem);line-height:1}
+.label{background:#fff;color:#1b2358;max-width:420px;border-radius:10px;padding:.9rem 1.1rem;transform:rotate(-1.2deg);box-shadow:0 3px 0 rgba(0,0,0,.28)}
+.label dl{margin:0;display:grid;grid-template-columns:auto 1fr;column-gap:.75rem}
+.label dt{font-size:.85rem;line-height:2.4rem;color:#5a6390}
+.label dd{margin:0;font-size:1.5rem;font-weight:600;line-height:2.4rem;border-bottom:1.5px dotted #8a94c8}
+.page{max-width:640px;margin:0 auto;padding:2rem 1.25rem 0 3.25rem;position:relative;background:repeating-linear-gradient(to bottom,transparent 0 calc(2rem - 1px),var(--line) calc(2rem - 1px) 2rem)}
+.page::before{content:"";position:absolute;left:2.4rem;top:0;bottom:0;width:2px;background:var(--margin);opacity:.7}
+.page h2{margin:0;font-size:2.1rem;line-height:2rem;font-weight:700}
+.page p{margin:0}
+.rows{display:grid;grid-template-columns:7rem 1fr;margin:0}
+.rows dt{color:var(--muted)}
+.rows dd{margin:0;font-size:1.35rem}
+.search{display:block;width:100%;border:0;border-bottom:2px solid var(--ink);background:transparent;color:inherit;font:inherit;height:2rem;padding:0;border-radius:0}
+.search:focus-visible,a:focus-visible{outline:3px solid var(--margin);outline-offset:2px}
+.count{color:var(--muted);font-size:.9rem}
+ol{margin:0;padding-left:1.8rem;columns:2;column-gap:1.5rem}
+ol li{font-size:1.3rem;line-height:2rem;break-inside:avoid}
+ol li::marker{color:var(--muted);font:.9rem system-ui,sans-serif}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%}
+th,td{height:2rem;padding:0 1rem 0 0;text-align:left;font-weight:400;white-space:nowrap}
+th{color:var(--muted)}
+td{font-size:1.3rem}
+footer{max-width:640px;margin:0 auto;padding:2rem 1.25rem 2.5rem 3.25rem;color:var(--muted);font-size:.9rem}
+@media (max-width:380px){ol{columns:1}}
+</style>
+</head>
+<body>
+<header class="cover">
+  <div>
+    <h1 class="hand" id="nama">Kelas Kita</h1>
+    <div class="label">
+      <dl>
+        <dt>Nama kelas</dt><dd class="hand" id="k-nama"></dd>
+        <dt>Wali kelas</dt><dd class="hand" id="k-wali"></dd>
+        <dt>Jumlah siswa</dt><dd class="hand" id="k-jumlah"></dd>
+        <dt>Motto</dt><dd class="hand" id="k-motto"></dd>
+      </dl>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="page" style="padding-bottom:2rem">
+    <h2 class="hand">Tentang kelas</h2>
+    <p id="tentang"></p>
+  </section>
+
+  <section class="page" style="padding-bottom:2rem">
+    <h2 class="hand">Pengurus kelas</h2>
+    <dl class="rows" id="pengurus"></dl>
+  </section>
+
+  <section class="page" style="padding-bottom:2rem">
+    <h2 class="hand">Daftar absen</h2>
+    <input class="search" id="cari" type="search" placeholder="Cari nama…" aria-label="Cari nama siswa" autocomplete="off">
+    <p class="count" id="hitung"></p>
+    <ol id="absen"></ol>
+  </section>
+
+  <section class="page" style="padding-bottom:2rem">
+    <h2 class="hand">Jadwal piket</h2>
+    <div class="tablewrap"><table id="piket"></table></div>
+  </section>
+</main>
+
+<footer>Dibuat bareng-bareng oleh anak kelas.</footer>
+
+<script>
+// Ganti isi di bawah ini dengan data kelas yang asli.
+var D = {
+  nama: "Kelas Kita",
+  wali: "Nama wali kelas",
+  motto: "Isi motto kelas di sini",
+  tentang: "Ceritakan kelas kalian di sini: kapan kenalan, kebiasaan lucu, prestasi, atau momen yang paling diingat.",
+  pengurus: [["Ketua","Nama ketua"],["Wakil","Nama wakil"],["Sekretaris","Nama sekretaris"],["Bendahara","Nama bendahara"]],
+  anggota: Array.from({length: 24}, function (_, i) { return "Nama siswa " + (i + 1); }),
+  piket: [["Senin","Regu 1"],["Selasa","Regu 2"],["Rabu","Regu 3"],["Kamis","Regu 4"],["Jumat","Regu 5"]]
+};
+
+function $(id){ return document.getElementById(id); }
+function el(tag, cls, text){ var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+
+document.title = "Profil " + D.nama;
+$("nama").textContent = D.nama;
+$("k-nama").textContent = D.nama;
+$("k-wali").textContent = D.wali;
+$("k-jumlah").textContent = D.anggota.length + " orang";
+$("k-motto").textContent = D.motto;
+$("tentang").textContent = D.tentang;
+
+D.pengurus.forEach(function (p) {
+  $("pengurus").appendChild(el("dt", "", p[0]));
+  $("pengurus").appendChild(el("dd", "hand", p[1]));
+});
+
+D.piket.forEach(function (p) {
+  var tr = el("tr");
+  tr.appendChild(el("th", "", p[0]));
+  tr.appendChild(el("td", "hand", p[1]));
+  $("piket").appendChild(tr);
+});
+
+function renderAbsen(q) {
+  var list = $("absen");
+  list.textContent = "";
+  var n = 0;
+  D.anggota.forEach(function (nama, i) {
+    if (q && nama.toLowerCase().indexOf(q) === -1) return;
+    var li = el("li", "hand", nama);
+    li.value = i + 1;
+    list.appendChild(li);
+    n++;
+  });
+  $("hitung").textContent = n === 0 ? "Nama tidak ketemu. Coba ejaan lain." : n + " dari " + D.anggota.length + " siswa";
+}
+$("cari").addEventListener("input", function (e) { renderAbsen(e.target.value.trim().toLowerCase()); });
+renderAbsen("");
+</script>
+</body>
+</html>
